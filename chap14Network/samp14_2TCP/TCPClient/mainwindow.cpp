@@ -4,33 +4,6 @@
 #include    <QHostAddress>
 #include    <QHostInfo>
 
-QString MainWindow::getLocalIP()
-{
-    QString hostName=QHostInfo::localHostName();//本地主机名
-    QHostInfo   hostInfo=QHostInfo::fromName(hostName);
-    QString   localIP="";
-
-    QList<QHostAddress> addList=hostInfo.addresses();//
-
-    if (!addList.isEmpty())
-    for (int i=0;i<addList.count();i++)
-    {
-        QHostAddress aHost=addList.at(i);
-        if (QAbstractSocket::IPv4Protocol==aHost.protocol())
-        {
-            localIP=aHost.toString();
-            break;
-        }
-    }
-    return localIP;
-}
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    if (tcpClient->state()==QAbstractSocket::ConnectedState)
-        tcpClient->disconnectFromHost();
-    event->accept();
-}
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -60,6 +33,34 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+QString MainWindow::getLocalIP()
+{
+    QString hostName=QHostInfo::localHostName();//本地主机名
+    QHostInfo   hostInfo=QHostInfo::fromName(hostName);
+    QString   localIP="";
+
+    QList<QHostAddress> addList=hostInfo.addresses();//
+
+    if (!addList.isEmpty())
+    for (int i=0;i<addList.count();i++)
+    {
+        QHostAddress aHost=addList.at(i);
+        if (QAbstractSocket::IPv4Protocol==aHost.protocol())
+        {
+            localIP=aHost.toString();
+            break;
+        }
+    }
+    return localIP;
+}
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (tcpClient->state()==QAbstractSocket::ConnectedState)
+        tcpClient->disconnectFromHost();
+    event->accept();
 }
 
 void MainWindow::onConnected()

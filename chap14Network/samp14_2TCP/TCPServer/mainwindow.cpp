@@ -2,6 +2,33 @@
 #include "ui_mainwindow.h"
 #include    <QtNetwork>
 
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+
+    LabListen=new QLabel("监听状态:");
+    LabListen->setMinimumWidth(150);
+    ui->statusBar->addWidget(LabListen);
+
+    LabSocketState=new QLabel("Socket状态：");//
+    LabSocketState->setMinimumWidth(200);
+    ui->statusBar->addWidget(LabSocketState);
+
+    QString localIP=getLocalIP();//本机IP
+    this->setWindowTitle(this->windowTitle()+"----本机IP："+localIP);
+    ui->comboIP->addItem(localIP);
+
+    tcpServer=new QTcpServer(this);
+    connect(tcpServer,SIGNAL(newConnection()),this,SLOT(onNewConnection()));
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
 
 QString MainWindow::getLocalIP()
 {//获取本机IPv4地址
@@ -29,33 +56,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (tcpServer->isListening())
         tcpServer->close();;//停止网络监听
     event->accept();
-}
-
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
-{
-    ui->setupUi(this);
-
-    LabListen=new QLabel("监听状态:");
-    LabListen->setMinimumWidth(150);
-    ui->statusBar->addWidget(LabListen);
-
-    LabSocketState=new QLabel("Socket状态：");//
-    LabSocketState->setMinimumWidth(200);
-    ui->statusBar->addWidget(LabSocketState);
-
-    QString localIP=getLocalIP();//本机IP
-    this->setWindowTitle(this->windowTitle()+"----本机IP："+localIP);
-    ui->comboIP->addItem(localIP);
-
-    tcpServer=new QTcpServer(this);
-    connect(tcpServer,SIGNAL(newConnection()),this,SLOT(onNewConnection()));
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
 }
 
 void MainWindow::onNewConnection()
